@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Current User</title>
+</head>
+
+<body>
+    <h1>Current User</h1>
+    {{#if user}}
+    <p><strong>ID:</strong> {{user._id}}</p>
+    <p><strong>Email:</strong> {{user.email}}</p>
+    {{else}}
+    <p>No user is currently logged in.</p>
+    {{/if}}
+</body>
+
+</html>
