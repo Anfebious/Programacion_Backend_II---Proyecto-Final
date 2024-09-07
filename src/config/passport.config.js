@@ -1,6 +1,6 @@
 import jwt from "passport-jwt"
 import passport from "passport";
-import User from "../models/user.model.js";
+import User from "../dao/mongo/models/user.model.js";
 import dotenv from "dotenv";
 
 dotenv.config();

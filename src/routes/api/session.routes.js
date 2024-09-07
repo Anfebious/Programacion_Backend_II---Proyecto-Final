@@ -2,8 +2,9 @@ import passportCall from "../../utils/passportCall.js"
 import express from "express";
 import passport from "passport";
 import bcrypt from "bcrypt";
-import User from "../../models/user.model.js";
+import User from "../../dao/mongo/models/user.model.js";
 import jwt from 'jsonwebtoken';
+import UserDto from "../../dao/dto/user.dto.js";
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ router.get("/current", passportCall("current"), (req, res) => {
     if (req.user) {
         res.json({
             message: "User is authenticated",
-            user: req.user,
+            user: new UserDto(req.user),
         });
     } else {
         res.status(401).json({

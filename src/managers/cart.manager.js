@@ -1,12 +1,17 @@
 import mongoose from "mongoose";
-import Cart from "../models/cart.model.js";
+import Cart from "../dao/mongo/models/cart.model.js";
 import { isValidID } from "../config/mongoose.config.js";
+import TicketManager from "./ticket.manager.js";
+import ProductManager from "./product.manager.js";
 
 import {
     ERROR_INVALID_ID,
     ERROR_NOT_FOUND_ID,
     ERROR_NOT_FOUND_INDEX,
 } from "../constants/messages.constant.js";
+
+const ticketManager = new TicketManager();
+const productManager = new ProductManager();
 
 export default class CartManager {
     #cart;
@@ -20,7 +25,6 @@ export default class CartManager {
         if (error instanceof mongoose.Error.ValidationError) {
             throw new Error(Object.values(error.errors)[0].message);
         }
-
         throw new Error(error.message);
     };
 
@@ -82,8 +86,9 @@ export default class CartManager {
     // Actualiza un carrito por su ID
     updateOneById = async (id, data) => {
         try {
+            console.log(id)
+            console.log(data)
             const cartFound = await this.#findOneById(id);
-
             cartFound.set(data);
             await cartFound.save();
             return cartFound.toObject();
@@ -159,4 +164,25 @@ export default class CartManager {
             this.#handleError(error);
         }
     };
+
+    purchase = async (id, user) => {
+        const cart = await this.#findOneById(id);
+        const updatedProducts = [];
+        let quantityPurchased = 0;
+        for (const item of cart.products) {
+            if (item.product.stock >= item.quantity) {
+                item.product.stock -= item.quantity;
+                // await item.product.save();
+                await productManager.updateOneById(item.product._id, { ...item.product._doc }, null)
+                quantityPurchased += item.quantity;
+            } else {
+                updatedProducts.push({
+                    product: item.product,
+                    quantity: item.quantity,
+                });
+            }
+        }
+        cart = await this.updateOneById(cart._id, updatedProducts)
+        return ticketManager.generateTicket(quantityPurchased, cart, user);
+    }
 }

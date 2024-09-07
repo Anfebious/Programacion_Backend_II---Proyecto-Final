@@ -1,6 +1,8 @@
 import passportCall from "../utils/passportCall.js"
 import { Router } from "express";
 import ProductManager from "../managers/product.manager.js";
+import UserDto from "../dao/dto/user.dto.js";
+import ProductDto from "../dao/dto/product.dto.js";
 
 import {
     ERROR_SERVER,
@@ -17,11 +19,8 @@ router.get('/login', (req, res) => {
 
 router.get("/current", passportCall("current"), (req, res) => {
     if (req.user) {
-        const user = {
-            _id: req.user._id,
-            email: req.user.email,
-        };
-        res.render("current", { user: user });
+        const userDto = new UserDto(req.user);
+        res.render("current", { user: userDto });
     } else {
         res.render("current", { user: null });
     }
@@ -32,18 +31,18 @@ router.get("/", async (req, res) => {
     try {
         const data = await productManager.getAll(req.query);
 
-        // Si se pasa un parámetro de ordenamiento, agrega a los datos para su uso en la vista
-        data.sort = req.query?.sort ? `&sort=${req.query.sort}` : "";
+        const productsDto = data.docs.map(product => new ProductDto(product));
 
-        // Asigna el ID del carrito actual a los datos de respuesta
-        data.currentCartId = currentCartId;
+        // Si se pasa un parámetro de ordenamiento, agrega a los datos para su uso en la vista
+        const sortParam = req.query?.sort ? `&sort=${req.query.sort}` : "";
 
         // Añade el ID del carrito actual a cada producto en la lista de productos
-        data.docs = data.docs.map((doc) => {
-            return { ...doc, currentCartId };
+        const productsWithCartId = productsDto.map((productDto) => {
+            return { ...productDto, currentCartId };
         });
 
-        res.status(200).render("index", { title: "Inicio", data });
+        productsWithCartId.currentCartId = currentCartId;
+        res.status(200).render("index", { title: "Inicio", data: productsWithCartId });
     } catch (error) {
         res.status(500).json({ status: false, ERROR_SERVER });
     }

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import moment from "moment";
 import CartManager from "../managers/cart.manager.js";
+import CartDto from "../dao/dto/cart.dto.js";
 
 import {
     ERROR_SERVER,
@@ -14,11 +15,13 @@ router.get("/:id", async (req, res) => {
     try {
         const data = await cartManager.getOneById(req.params.id);
 
+        const cartDto = new CartDto(data);
+
         // Formatea las fechas de creación y actualización del carrito
         data.createdAt = moment(data.createdAt).format("YYYY-MM-DD HH:mm:ss");
         data.updatedAt = moment(data.updatedAt).format("YYYY-MM-DD HH:mm:ss");
 
-        res.status(200).render("cart", { title: "Carrito", data });
+        res.status(200).render("cart", { title: "Carrito", cartDto });
     } catch (error) {
         res.status(500).json({ status: false, ERROR_SERVER });
     }

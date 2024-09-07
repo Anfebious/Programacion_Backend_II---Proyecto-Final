@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import paths from "../utils/paths.js";
-import Product from "../models/product.model.js";
+import Product from "../dao/mongo/models/product.model.js";
 import { isValidID } from "../config/mongoose.config.js";
 import { deleteFile } from "../utils/fileSystem.js";
 import { convertToBoolean } from "../utils/converter.js";
@@ -106,6 +106,7 @@ export default class ProductManager {
             const currentThumbnail = productFound.thumbnail;
             const newThumbnail = filename;
 
+            console.log(data)
             const newValues = {
                 ...data,
                 status: convertToBoolean(data.status),
