@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Cart from "../dao/mongo/models/cart.model.js";
+import Cart from "../dao/mongodb/model/cart.model.js";
 import { isValidID } from "../config/mongoose.config.js";
 import TicketManager from "./ticket.manager.js";
 import ProductManager from "./product.manager.js";
@@ -86,8 +86,6 @@ export default class CartManager {
     // Actualiza un carrito por su ID
     updateOneById = async (id, data) => {
         try {
-            console.log(id)
-            console.log(data)
             const cartFound = await this.#findOneById(id);
             cartFound.set(data);
             await cartFound.save();

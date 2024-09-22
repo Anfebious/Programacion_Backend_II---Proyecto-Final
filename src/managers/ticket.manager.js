@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Ticket from "../dao/mongo/models/ticket.model.js";
+import Ticket from "../dao/mongodb/model/ticket.model.js";
 
 import {
     ERROR_INVALID_ID,

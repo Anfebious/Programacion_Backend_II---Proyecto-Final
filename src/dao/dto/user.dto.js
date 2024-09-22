@@ -1,32 +1,26 @@
-class UserDto {
-    constructor(user) {
-        this._id = user._id;
-        this.firstName = user.first_name;
-        this.lastName = user.last_name;
-        this.email = user.email;
-        this.age = user.age;
-        this.cart = user.cart;
-        this.role = user.role;
-        this.createdAt = user.createdAt;
-        this.updatedAt = user.updatedAt;
-    }
+import { createHash } from "../../utils/security.js";
 
-    static fromCreateDto(data) {
+export default class UserDTO {
+    fromModel(model) {
         return {
-            first_name: data.firstName,
-            last_name: data.lastName,
-            email: data.email,
-            age: data.age,
-            password: data.password, // Password should be handled securely, not included in responses
-            cart: data.cart,
-            role: data.role || 'user', // Default to 'user' if role is not provided
+            id: model._id,
+            firstName: model.first_name,
+            lastName: model.last_name,
+            email: model.email,
+            age: model.age,
+            role: model.role,
         };
     }
 
-    static fromUpdateDto(data) {
-        const { password, ...updateData } = data; // Exclude password from the update data
-        return updateData;
+    fromData(data) {
+        return {
+            id: data.id,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            age: data.age,
+            role: data.role,
+            password: data.password ? createHash(data.password) : null,
+        };
     }
 }
-
-export default UserDto;

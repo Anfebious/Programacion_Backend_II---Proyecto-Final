@@ -6,9 +6,9 @@
     <section class="container-cart__details">
         <h3>Detalles</h3>
         <ul>
-            <li>ID: <b>{{data._id}}</b></li>
-            <li>Creado: <i>{{data.createdAt}}hs</i></li>
-            <li>Actualizado: <i>{{data.updatedAt}}hs</i></li>
+            <li>ID: <b>{{cart.id}}</b></li>
+            <li>Creado: <i>{{cart.createdAt}}hs</i></li>
+            <li>Actualizado: <i>{{cart.updatedAt}}hs</i></li>
         </ul>
     </section>
 
@@ -23,7 +23,7 @@
                 </tr>
             </thead>
             <tbody>
-                {{#each data.products}}
+                {{#each cart.products}}
                 <tr>
                     <td>{{this.product._id}}</td>
                     <td>{{this.product.title}}</td>

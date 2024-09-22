@@ -1,30 +1,22 @@
-import { Router } from "express";
-import moment from "moment";
-import CartManager from "../managers/cart.manager.js";
-import CartDto from "../dao/dto/cart.dto.js";
+import BaseRouter from "./base.router.js"; // Adjust the path as necessary
+import CartsController from "../controllers/carts.controller.js"; // Adjust the path as necessary
 
-import {
-    ERROR_SERVER,
-} from "../constants/messages.constant.js";
-
-const router = Router();
-const cartManager = new CartManager();
-
-// Ruta para obtener un carrito por su ID y mostrarlo en una vista
-router.get("/:id", async (req, res) => {
-    try {
-        const data = await cartManager.getOneById(req.params.id);
-
-        const cartDto = new CartDto(data);
-
-        // Formatea las fechas de creación y actualización del carrito
-        data.createdAt = moment(data.createdAt).format("YYYY-MM-DD HH:mm:ss");
-        data.updatedAt = moment(data.updatedAt).format("YYYY-MM-DD HH:mm:ss");
-
-        res.status(200).render("cart", { title: "Carrito", cartDto });
-    } catch (error) {
-        res.status(500).json({ status: false, ERROR_SERVER });
+export default class CartRouter extends BaseRouter {
+    #cartsController
+    constructor() {
+        super();
+        this.#cartsController = new CartsController();
     }
-});
 
-export default router;
+    // Override the initialize method to define routes
+    initialize() {
+        const router = this.getRouter();
+        this.addGetRoute("/:id", [], (req, res) => this.#cartsController.getCartById(req, res));
+
+        // Middleware para manejar errores
+        // eslint-disable-next-line no-unused-vars
+        router.use((err, req, res, next) => {
+            res.sendError(err);
+        });
+    }
+}

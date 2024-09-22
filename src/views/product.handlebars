@@ -6,21 +6,21 @@
     <section class="container-product__details">
         <h3>Detalles</h3>
         <ul>
-            <li>ID: <b>{{data._id}}</b></li>
-            <li>Título: <b>{{data.title}}</b></li>
-            <li>Descripción: <b>{{data.description}}</b></li>
-            <li>Código: <b>{{data.code}}</b></li>
-            <li>Precio: $<b>{{data.price}}</b></li>
-            <li>Stock: <b>{{data.stock}}</b></li>
-            <li>Categoría: <b>{{data.category}}</b></li>
-            <li>Estado: <b>{{#if data.status}}HABILITADO{{else}}INHABILITADO{{/if}}</b></li>
-            <li>Disponible: <b>{{#if data.availability}}SI{{else}}NO{{/if}}</b></li>
+            <li>ID: <b>{{product.id}}</b></li>
+            <li>Título: <b>{{product.title}}</b></li>
+            <li>Descripción: <b>{{product.description}}</b></li>
+            <li>Código: <b>{{product.code}}</b></li>
+            <li>Precio: $<b>{{product.price}}</b></li>
+            <li>Stock: <b>{{product.stock}}</b></li>
+            <li>Categoría: <b>{{product.category}}</b></li>
+            <li>Estado: <b>{{#if product.status}}HABILITADO{{else}}INHABILITADO{{/if}}</b></li>
+            <li>Disponible: <b>{{#if product.availability}}SI{{else}}NO{{/if}}</b></li>
             <li>
                 Imagen:
-                <img src="/public/images/{{data.thumbnail}}" alt="Imagen del producto">
+                <img src="/public/images/{{product.thumbnail}}" alt="Imagen del producto">
             </li>
-            <li>Creado: <i>{{data.createdAt}}hs</i></li>
-            <li>Actualizado: <i>{{data.updatedAt}}hs</i></li>
+            <li>Creado: <i>{{product.createdAt}}hs</i></li>
+            <li>Actualizado: <i>{{product.updatedAt}}hs</i></li>
         </ul>
 
         <a href="/"><button title="Volver al inicio">↶</button></a>

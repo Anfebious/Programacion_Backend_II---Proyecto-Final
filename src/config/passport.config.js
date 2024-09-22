@@ -1,48 +1,36 @@
-import jwt from "passport-jwt"
 import passport from "passport";
-import User from "../dao/mongo/models/user.model.js";
-import dotenv from "dotenv";
+import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
+import UserService from "../services/user.service.js";
 
-dotenv.config();
+const userService = new UserService();
 
-const cookieExtractor = (req) => {
-    let token = null;
-    if (req && req.cookies) {
-        token = req.cookies['jwt'];
-    }
-    return token;
+export const config = (server) => {
+    // Opciones para la estrategia JWT basada en el encabezado Authorization
+    const jwtHeaderOptions = {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: process.env.JWT_SECRET,
+    };
+
+    // Opciones para la estrategia JWT basada en una cookie llamada "token"
+    const jwtCookieOptions = {
+        jwtFromRequest: (req) => req.cookies ? req.cookies["token"] : null,
+        secretOrKey: process.env.JWT_SECRET ?? "dsafdsf",
+    };
+
+    // Función que maneja el inicio de sesión
+    const handleLogin = async (payload, done) => {
+        try {
+            const userFound = await userService.findOneById(payload.id);
+            return done(null, userFound);
+        } catch (error) {
+            return done(null, false, { message: error.message });
+        }
+    };
+
+    // Configura las estrategias JWT para Passport
+    passport.use("jwt-header", new JwtStrategy(jwtHeaderOptions, handleLogin));
+    passport.use("jwt-cookie", new JwtStrategy(jwtCookieOptions, handleLogin));
+
+    // Inicializa Passport en el servidor
+    server.use(passport.initialize());
 };
-
-const JWTStrategy = jwt.Strategy;
-const ExtractJWT = jwt.ExtractJwt;
-const initializePassport = () => {
-    passport.use("jwt", new JWTStrategy({
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.JWT_SECRET,
-    }, async (jwt_payload, done) => {
-        try {
-            return done(null, jwt_payload)
-        } catch (error) {
-            return done(error)
-        }
-    }
-    ));
-    passport.use("current", new JWTStrategy({
-        jwtFromRequest: ExtractJWT.fromExtractors([cookieExtractor]),
-        secretOrKey: process.env.JWT_SECRET,
-    }, async (jwt_payload, done) => {
-        try {
-            const user = await User.findById(jwt_payload.id);
-
-            if (!user) {
-                return done(null, false, { message: 'User not found' });
-            }
-
-            return done(null, user);
-        } catch (error) {
-            return done(error, false, { message: 'Authentication failure' });
-        }
-    }))
-}
-
-export default initializePassport;

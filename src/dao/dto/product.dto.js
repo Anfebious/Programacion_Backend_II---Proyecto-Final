@@ -1,17 +1,34 @@
 class ProductDto {
-    constructor(product) {
-        this._id = product._id;
-        this.title = product.title;
-        this.description = product.description;
-        this.code = product.code;
-        this.price = product.price;
-        this.stock = product.stock;
-        this.status = product.status;
-        this.availability = product.availability;
-        this.category = product.category;
-        this.thumbnail = product.thumbnail;
-        this.createdAt = product.createdAt;
-        this.updatedAt = product.updatedAt;
+    fromModel(model) {
+        return {
+            _id: model._id,
+            title: model.title,
+            description: model.description,
+            code: model.code,
+            price: model.price,
+            stock: model.stock,
+            status: model.status,
+            availability: model.availability,
+            category: model.category,
+            thumbnail: model.thumbnail,
+            createdAt: model.createdAt,
+            updatedAt: model.updatedAt,
+        };
+    }
+
+    fromData(data) {
+        return {
+            id: data._id,
+            title: data.title,
+            description: data.description,
+            code: data.code,
+            price: data.price,
+            stock: data.stock,
+            status: data.status,
+            availability: data.availability,
+            category: data.category,
+            thumbnail: data.thumbnail,
+        };
     }
 
     static fromCreateDto(data) {

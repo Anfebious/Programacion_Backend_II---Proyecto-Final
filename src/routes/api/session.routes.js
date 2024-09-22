@@ -1,55 +1,29 @@
-import passportCall from "../../utils/passportCall.js"
-import express from "express";
-import passport from "passport";
-import bcrypt from "bcrypt";
-import User from "../../dao/mongo/models/user.model.js";
-import jwt from 'jsonwebtoken';
-import UserDto from "../../dao/dto/user.dto.js";
+import BaseRouter from "../base.router.js"; // Adjust the path as necessary
+import passportCall from "../../utils/passportCall.js";
+import SessionController from "../../controllers/session.controller.js"; // Adjust the path as necessary
+import { generateToken } from "../../middlewares/auth.middleware.js";
+import { USER } from "../../constants/roles.constant.js";
 
-const router = express.Router();
 
-router.get('/test', passportCall("jwt"), (req, res) => {
-    res.json({ message: 'Authentication successful' });
-});
 
-router.post('/login', async (req, res, next) => {
-    const { email, password } = req.body;
-    try {
-        const user = await User.findOne({ email });
-        if (!user) {
-            return res.status(401).json({ message: 'User not found' });
-        }
-
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid password' });
-        }
-
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-        res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
-
-        // res.json({ user });
-        // res.redirect('/login?message=Login successful');
-        res.render("login", { message: "login successful" });
-    } catch (error) {
-        next(error);
+export default class SessionRouter extends BaseRouter {
+    #sessionController
+    constructor() {
+        super();
+        this.#sessionController = new SessionController();
     }
-});
 
+    // Override the initialize method to define routes
+    initialize() {
+        const router = this.getRouter();
+        this.addGetRoute('/test', [], (req, res) => this.#sessionController.testAuth(req, res));
+        this.addPostRoute('/login', [], generateToken, (req, res) => this.#sessionController.login(req, res));
+        this.addGetRoute("/current", [USER], (req, res) => this.#sessionController.currentUser(req, res));
 
-// Middleware to check authentication and return token
-router.get("/current", passportCall("current"), (req, res) => {
-    if (req.user) {
-        res.json({
-            message: "User is authenticated",
-            user: new UserDto(req.user),
-        });
-    } else {
-        res.status(401).json({
-            message: "Unauthorized access",
+        // Middleware para manejar errores
+        // eslint-disable-next-line no-unused-vars
+        router.use((err, req, res, next) => {
+            res.sendError(err);
         });
     }
-});
-
-export default router;
+}

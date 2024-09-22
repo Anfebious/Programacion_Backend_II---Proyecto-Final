@@ -4,21 +4,21 @@ import paginate from "mongoose-paginate-v2";
 const productSchema = new Schema({
     title: {
         type: String,
-        required: [ true, "El nombre es obligatorio" ],
+        required: [true, "El nombre es obligatorio"],
         uppercase: true,
         trim: true,
-        minLength: [ 3, "El nombre debe tener al menos 3 caracteres" ],
-        maxLength: [ 25, "El nombre debe tener como máximo 25 caracteres" ],
+        minLength: [3, "El nombre debe tener al menos 3 caracteres"],
+        maxLength: [25, "El nombre debe tener como máximo 25 caracteres"],
         index: { name: "idx_title" },
     },
     description: {
         type: String,
         trim: true,
-        maxLength: [ 250, "La descripción debe tener como máximo 250 caracteres" ],
+        maxLength: [250, "La descripción debe tener como máximo 250 caracteres"],
     },
     code: {
         type: String,
-        required: [ true, "El código es obligatorio" ],
+        required: [true, "El código es obligatorio"],
         uppercase: true,
         trim: true,
         unique: true,
@@ -35,31 +35,31 @@ const productSchema = new Schema({
     },
     price: {
         type: Number,
-        required: [ true, "El precio es obligatorio" ],
-        min: [ 0, "El precio debe ser un valor positivo" ],
+        required: [true, "El precio es obligatorio"],
+        min: [0, "El precio debe ser un valor positivo"],
     },
     stock: {
         type: Number,
-        required: [ true, "El stock es obligatorio" ],
-        min: [ 0, "El stock debe ser un valor positivo" ],
+        required: [true, "El stock es obligatorio"],
+        min: [0, "El stock debe ser un valor positivo"],
     },
     status: {
         type: Boolean,
-        required: [ true, "El estado es obligatorio" ],
+        required: [true, "El estado es obligatorio"],
     },
     availability: {
         type: Boolean,
-        required: [ true, "La disponibilidad es obligatoria" ],
+        required: [true, "La disponibilidad es obligatoria"],
     },
     category: {
         type: String,
-        required: [ true, "La categoría es obligatoria" ],
+        required: [true, "La categoría es obligatoria"],
         uppercase: true,
         trim: true,
     },
     thumbnail: {
         type: String,
-        required: [ true, "La imagen es obligatoria" ],
+        required: [true, "La imagen es obligatoria"],
         trim: true,
     },
 }, {
@@ -68,7 +68,7 @@ const productSchema = new Schema({
 });
 
 // Middleware que elimina la referencia en los carritos al eliminar el producto.
-productSchema.pre("deleteOne", async function(next) {
+productSchema.pre("deleteOne", async function (next) {
     try {
         const Cart = model("carts");
 
